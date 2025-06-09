@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scientific Glassmorphism Calculator</title>
+<style>
+  /* Google Fonts: Poppins */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  :root {
+    /* Colors for Light Mode */
+    --bg-light: #ffffff;
+    --text-light: #374151;
+    --primary-light: #2563eb;
+    --card-bg-light: rgba(243, 244, 246, 0.8);
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --button-bg-light: rgba(255 255 255 / 0.8);
+
+    /* Colors for Dark Mode */
+    --bg-dark: #121212;
+    --text-dark: #d1d5db;
+    --primary-dark: #60a5fa;
+    --card-bg-dark: rgba(31, 41, 55, 0.8);
+    --shadow-dark: rgba(0, 0, 0, 0.6);
+    --button-bg-dark: rgba(255 255 255 / 0.1);
+
+    /* Common & transition */
+    --btn-radius: 12px;
+    --btn-shadow-light:
+      4px 4px 6px rgba(255 255 255 / 0.7),
+      -4px -4px 6px rgba(0 0 0 / 0.06);
+    --btn-shadow-dark:
+      4px 4px 6px rgba(255 255 255 / 0.1),
+      -4px -4px 6px rgba(0 0 0 / 0.5);
+    --glass-blur: blur(12px);
+    --font-family: 'Poppins', sans-serif;
+    --transition-speed: 0.3s;
+  }
+
+  body[data-theme='light'] {
+    background: var(--bg-light);
+    color: var(--text-light);
+  }
+  body[data-theme='dark'] {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+  }
+
+  .container {
+    width: 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .calculator {
+    background:
+      var(--card-bg-light);
+    backdrop-filter: var(--glass-blur) saturate(130%);
+    border-radius: 1rem;
+    box-shadow:
+      0 8px 32px 0 var(--shadow-light);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: background var(--transition-speed), box-shadow var(--transition-speed);
+  }
+  body[data-theme='dark'] .calculator {
+    background: var(--card-bg-dark);
+    box-shadow:
+      0 8px 32px 0 var(--shadow-dark);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--primary-light);
+    transition: color var(--transition-speed);
+  }
+  body[data-theme='dark'] .header h1 {
+    color: var(--primary-dark);
+  }
+  .toggle-btn {
+    background: none;
+    border: 2px solid var(--primary-light);
+    color: var(--primary-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+    user-select: none;
+  }
+  .toggle-btn:hover {
+    background-color: var(--primary-light);
+    color: white;
+  }
+  body[data-theme='dark'] .toggle-btn {
+    border-color: var(--primary-dark);
+    color: var(--primary-dark);
+  }
+  body[data-theme='dark'] .toggle-btn:hover {
+    background-color: var(--primary-dark);
+  }
+
+  .display {
+    background:
+      var(--card-bg-light);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    box-sizing: border-box;
+    box-shadow:
+      inset 6px 6px 8px rgba(255 255 255 / 0.7),
+      inset -6px -6px 8px rgba(0 0 0 / 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 70px;
+    word-wrap: break-word;
+    font-size: 1.3rem;
+    transition: background var(--transition-speed), box-shadow var(--transition-speed);
+  }
+  body[data-theme='dark'] .display {
+    background: var(--card-bg-dark);
+    box-shadow:
+      inset 6px 6px 8px rgba(255 255 255 / 0.05),
+      inset -6px -6px 8px rgba(0 0 0 / 0.3);
+  }
+  .input {
+    font-weight: 600;
+    min-height: 1.2em;
+    color: var(--text-light);
+  }
+  body[data-theme='dark'] .input {
+    color: var(--text-dark);
+  }
+  .result {
+    margin-top: 0.15rem;
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: var(--primary-light);
+    user-select: all;
+    min-height: 1.7em;
+  }
+  body[data-theme='dark'] .result {
+    color: var(--primary-dark);
+  }
+
+  /* Buttons grid */
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .buttons.scientific {
+    margin-top: 0.8rem;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  button {
+    background:
+      var(--button-bg-light);
+    border: none;
+    box-shadow:
+      4px 4px 8px rgba(255 255 255 / 0.7),
+      -4px -4px 8px rgba(0 0 0 / 0.06);
+    border-radius: var(--btn-radius);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--text-light);
+    cursor: pointer;
+    user-select: none;
+    padding: 14px 0;
+    transition:
+      background-color var(--transition-speed),
+      transform 0.15s ease,
+      color var(--transition-speed);
+  }
+  button:active {
+    transform: scale(0.94);
+  }
+  button.operator {
+    color: var(--primary-light);
+  }
+  button.equal {
+    background: var(--primary-light);
+    color: white;
+    box-shadow:
+      4px 4px 12px rgba(255 255 255 / 0.3),
+      -4px -4px 12px rgba(0 0 0 / 0.3);
+  }
+  button.equal:active {
+    transform: scale(0.93);
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  body[data-theme='dark'] button {
+    background: var(--button-bg-dark);
+    box-shadow:
+      4px 4px 8px rgba(255 255 255 / 0.1),
+      -4px -4px 8px rgba(0 0 0 / 0.5);
+    color: var(--text-dark);
+  }
+  body[data-theme='dark'] button.operator {
+    color: var(--primary-dark);
+  }
+  body[data-theme='dark'] button.equal {
+    background: var(--primary-dark);
+    box-shadow:
+      4px 4px 12px rgba(255 255 255 / 0.25),
+      -4px -4px 12px rgba(0 0 0 / 0.5);
+  }
+
+  /* History */
+  .history {
+    background:
+      var(--card-bg-light);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 0.75rem;
+    box-shadow:
+      inset 4px 4px 8px rgba(255 255 255 / 0.7),
+      inset -4px -4px 8px rgba(0 0 0 / 0.08);
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    max-height: 180px;
+    overflow-y: auto;
+    user-select: none;
+  }
+  body[data-theme='dark'] .history {
+    background: var(--card-bg-dark);
+    box-shadow:
+      inset 4px 4px 8px rgba(255 255 255 / 0.1),
+      inset -4px -4px 8px rgba(0 0 0 / 0.3);
+    color: var(--text-dark);
+  }
+  .history strong {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .entry {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.3rem;
+    user-select: text;
+  }
+  .entry:last-child {
+    margin-bottom: 0;
+  }
+  .expression {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .result {
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--primary-light);
+  }
+  body[data-theme='dark'] .result {
+    color: var(--primary-dark);
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    color: var(--primary-light);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 6px;
+    transition: color 0.2s;
+    user-select: none;
+  }
+  .copy-btn:hover {
+    color: #1c3aed;
+  }
+  body[data-theme='dark'] .copy-btn {
+    color: var(--primary-dark);
+  }
+  body[data-theme='dark'] .copy-btn:hover {
+    color: #3b82f6;
+  }
+
+  /* Responsive */
+  @media (max-width: 420px) {
+    .container {
+      width: 100%;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+    }
+    button {
+      font-size: 1.15rem;
+      padding: 12px 0;
+    }
+  }
+</style>
+</head>
+<body data-theme="light">
+  <div class="container" role="main" aria-label="Scientific Calculator">
+    <div class="calculator" role="application" aria-label="Calculator">
+      <div class="header">
+        <h1>Calc</h1>
+        <div style="display:flex;gap:0.5rem; align-items:center;">
+          <button class="toggle-btn" id="themeToggle" aria-pressed="false" aria-label="Toggle light/dark theme">Dark Mode</button>
+          <button class="toggle-btn" id="scientificToggle" aria-pressed="false" aria-label="Toggle scientific mode">Scientific</button>
+        </div>
+      </div>
+
+      <div class="display" role="region" aria-live="polite" aria-atomic="true" aria-label="Calculator display">
+        <div class="input" id="inputDisplay" aria-label="Input expression"></div>
+        <div class="result" id="resultDisplay" aria-label="Calculation result"></div>
+      </div>
+
+      <div class="buttons basic-buttons" role="group" aria-label="Basic calculator buttons">
+        <button type="button" aria-label="Clear all" id="btnClear">C</button>
+        <button type="button" aria-label="Delete last character" id="btnDelete">DEL</button>
+        <button type="button" aria-label="Open parenthesis" data-value="(">(</button>
+        <button type="button" aria-label="Close parenthesis" data-value=")">)</button>
+
+        <button type="button" class="operator" aria-label="Divide" data-value="/">÷</button>
+        <button type="button" class="operator" aria-label="Multiply" data-value="*">×</button>
+        <button type="button" class="operator" aria-label="Subtract" data-value="-">−</button>
+        <button type="button" class="operator" aria-label="Add" data-value="+">+</button>
+
+        <button type="button" data-value="7">7</button>
+        <button type="button" data-value="8">8</button>
+        <button type="button" data-value="9">9</button>
+        <button type="button" class="equal" id="btnEquals" aria-label="Calculate result">=</button>
+
+        <button type="button" data-value="4">4</button>
+        <button type="button" data-value="5">5</button>
+        <button type="button" data-value="6">6</button>
+        <button type="button" data-value="1">1</button>
+
+        <button type="button" data-value="2">2</button>
+        <button type="button" data-value="3">3</button>
+        <button type="button" data-value="0">0</button>
+        <button type="button" data-value=".">.</button>
+      </div>
+
+      <div class="buttons scientific" role="group" aria-label="Scientific calculator buttons" id="scientificButtons" hidden>
+        <button type="button" aria-label="Square root" data-value="sqrt(">√</button>
+        <button type="button" aria-label="Power" data-value="^">xʸ</button>
+        <button type="button" aria-label="Natural logarithm" data-value="log(">log</button>
+        <button type="button" aria-label="Sine" data-value="sin(">sin</button>
+        <button type="button" aria-label="Cosine" data-value="cos(">cos</button>
+        <button type="button" aria-label="Tangent" data-value="tan(">tan</button>
+      </div>
+    </div>
+
+    <section class="history" aria-label="Calculation history" id="history" tabindex="0">
+      <strong>History</strong>
+      <p>No history yet.</p>
+    </section>
+  </div>
+
+<script>
+  (() => {
+    const inputDisplay = document.getElementById('inputDisplay');
+    const resultDisplay = document.getElementById('resultDisplay');
+    const btnClear = document.getElementById('btnClear');
+    const btnDelete = document.getElementById('btnDelete');
+    const btnEquals = document.getElementById('btnEquals');
+    const buttons = document.querySelectorAll('.buttons button[data-value]');
+    const scientificToggle = document.getElementById('scientificToggle');
+    const scientificButtons = document.getElementById('scientificButtons');
+    const historyContainer = document.getElementById('history');
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    let expression = '';
+    let history = [];
+    let darkMode = false;
+    let scientificMode = false;
+
+    // Map for replacing caret (^) with pow function syntax
+    function replacePower(exp) {
+      // Regexp for x^y → pow(x,y)
+      // We'll convert all ^ operators with proper parsing using a loop
+      // Here, a basic replacement with support for simple patterns:
+      // For more complex parsing use a math parser library, but we keep it simple.
+      // Replace 'a ^ b' occurrences:
+
+      // Use a loop to transform all '^' operators into pow()
+      while (exp.includes('^')) {
+        let idx = exp.indexOf('^');
+
+        // find operand to the left
+        let leftIdx = idx -1;
+        let leftOperand = '';
+        let parensCount = 0;
+        while (leftIdx >=0) {
+          let ch = exp[leftIdx];
+          if (ch === ')') parensCount++;
+          else if (ch === '(') parensCount--;
+          if ((parensCount === 0 && /[\+\-\*\/\^()\s]/.test(ch)) || leftIdx===0) break;
+          leftIdx--;
+        }
+        if (leftIdx !== 0 || /[\+\-\*\/\^()\s]/.test(exp[leftIdx])) leftIdx++;
+
+        leftOperand = exp.slice(leftIdx, idx).trim();
+
+        // find operand to the right
+        let rightIdx = idx + 1;
+        parensCount = 0;
+        while (rightIdx < exp.length) {
+          let ch = exp[rightIdx];
+          if (ch === '(') parensCount++;
+          else if (ch === ')') parensCount--;
+          if ((parensCount === 0 && /[\+\-\*\/\^()\s]/.test(ch)) || rightIdx === exp.length -1) break;
+          rightIdx++;
+        }
+        if (rightIdx === exp.length -1 && !/[\+\-\*\/\^()\s]/.test(exp[rightIdx])) rightIdx++;
+        else if (parensCount === 0 && /[\+\-\*\/\^()\s]/.test(exp[rightIdx])) rightIdx--;
+
+        let rightOperand = exp.slice(idx+1, rightIdx+1).trim();
+        // console.log('Power rewrite:', leftOperand, '^', rightOperand);
+
+        // Build replacement string
+        let replacement = `pow(${leftOperand},${rightOperand})`;
+
+        // Replace in expression
+        exp = exp.substring(0, leftIdx) + replacement + exp.substring(rightIdx+1);
+
+      }
+      return exp;
+    }
+
+    // Function replacements for eval
+    function evalWithFunctions(expr) {
+      // Create Function context with safe Math functions
+      // We will support sqrt, sin, cos, tan, log, pow
+
+      const mathFuncs = {
+        sqrt: Math.sqrt,
+        sin: x => Math.sin(x * Math.PI/180),
+        cos: x => Math.cos(x * Math.PI/180),
+        tan: x => Math.tan(x * Math.PI/180),
+        log: Math.log,
+        pow: Math.pow,
+      };
+
+      // Replace power operator '^' with pow calls
+      expr = replacePower(expr);
+
+      // Check for invalid chars (allow letters for funcs)
+      if (/[^0-9+\-*/().,^a-z\s]/i.test(expr)) {
+        throw new Error('Invalid characters');
+      }
+
+      // Evaluate with Function that exposes math functions
+      // eslint-disable-next-line no-new-func
+      return Function('"use strict";' +
+        'const {sqrt,sin,cos,tan,log,pow} = arguments[0];' +
+        'return (' + expr + ');')(mathFuncs);
+    }
+
+    function updateDisplays() {
+      inputDisplay.textContent = expression || '0';
+
+      try {
+        if (expression) {
+          const res = evalWithFunctions(expression);
+          resultDisplay.textContent = res === undefined ? '' : res;
+        } else {
+          resultDisplay.textContent = '';
+        }
+      } catch {
+        resultDisplay.textContent = '';
+      }
+    }
+
+    // Auto-correct brackets balance
+    function autoCorrectBrackets(expr) {
+      let count = 0;
+      for (const ch of expr) {
+        if(ch === '(') count++;
+        else if(ch === ')') count--;
+      }
+      while(count > 0) {
+        expr += ')';
+        count--;
+      }
+      return expr;
+    }
+
+    function addHistoryEntry(expr, result) {
+      if (!expr || result === undefined || result === '') return;
+      history.unshift({ expr, result });
+      if (history.length > 30) history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      if (history.length === 0) {
+        historyContainer.innerHTML = '<strong>History</strong><p>No history yet.</p>';
+        return;
+      }
+      let html = '<strong>History</strong>';
+      for (let i = 0; i < history.length; i++) {
+        const entry = history[i];
+        html += `<div class="entry" tabindex="0">
+          <span class="expression" title="${entry.expr}">${entry.expr}</span>
+          <span class="result" title="Result">${entry.result}</span>
+          <button class="copy-btn" aria-label="Copy result to clipboard" data-idx="${i}">📋</button>
+        </div>`;
+      }
+      historyContainer.innerHTML = html;
+    }
+
+    function appendValue(val) {
+      // Special handling so functions open with parentheses automatically if needed
+      const funcs = ['sqrt(', 'sin(', 'cos(', 'tan(', 'log('];
+
+      // For manual ',' input handling (disabled for now)
+      // Check for multiple decimals in segment is skipped for simplicity
+
+      if (funcs.includes(val)) {
+        // Prevent appending if last char is number or closing bracket without operator
+        if(expression.length > 0) {
+          const last = expression[expression.length -1];
+          if (/[0-9)]/.test(last)) {
+            expression += '*';
+          }
+        }
+      }
+
+      // For ^ operator - just add directly (will be resolved in evaluation)
+      if (val === '^' && expression.length === 0) return; // Prevent starting expression with ^
+
+      expression += val;
+      updateDisplays();
+    }
+
+    btnClear.onclick = () => {
+      expression = '';
+      updateDisplays();
+    };
+
+    btnDelete.onclick = () => {
+      expression = expression.slice(0, -1);
+      updateDisplays();
+    };
+
+    btnEquals.onclick = () => {
+      try {
+        let evalExpr = autoCorrectBrackets(expression);
+        let res = evalWithFunctions(evalExpr);
+        if(Number.isFinite(res)) {
+          // Round float to 12 digits max to avoid clutter
+          res = +parseFloat(res.toFixed(12));
+        }
+        addHistoryEntry(expression, res);
+        expression = String(res);
+        updateDisplays();
+      } catch {
+        resultDisplay.textContent = 'Error';
+      }
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        appendValue(btn.dataset.value);
+      });
+    });
+
+    // Handle scientific toggle
+    scientificToggle.onclick = () => {
+      scientificMode = !scientificMode;
+      scientificButtons.hidden = !scientificMode;
+      scientificToggle.setAttribute('aria-pressed', scientificMode);
+      scientificToggle.textContent = scientificMode ? 'Basic' : 'Scientific';
+      // Adjust grid columns on basic-buttons
+      const basicButtons = document.querySelector('.buttons.basic-buttons');
+      if(scientificMode){
+        basicButtons.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      } else {
+        basicButtons.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      }
+    };
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      const key = e.key;
+
+      const allowedKeys = '0123456789+-*/().^';
+
+      // Map keys for scientific functions (s=sin, c=cos, t=tan, l=log, r=sqrt)
+      // We'll support typing 's', 'c', 't', 'l', 'r' as shortcuts for functions
+      // Beware conflicts with number / operators
+
+      if (allowedKeys.includes(key)) {
+        appendValue(key);
+        e.preventDefault();
+      } else if (key === 'Enter' || key === '=') {
+        btnEquals.click();
+        e.preventDefault();
+      } else if (key === 'Backspace') {
+        btnDelete.click();
+        e.preventDefault();
+      } else if (key === 'Escape') {
+        btnClear.click();
+        e.preventDefault();
+      } else if (key.toLowerCase() === 's') {
+        appendValue('sin(');
+        e.preventDefault();
+      } else if (key.toLowerCase() === 'c') {
+        appendValue('cos(');
+        e.preventDefault();
+      } else if (key.toLowerCase() === 't') {
+        appendValue('tan(');
+        e.preventDefault();
+      } else if (key.toLowerCase() === 'l') {
+        appendValue('log(');
+        e.preventDefault();
+      } else if (key.toLowerCase() === 'r') {
+        appendValue('sqrt(');
+        e.preventDefault();
+      }
+    });
+
+    // Copy result from history
+    historyContainer.addEventListener('click', e => {
+      if(e.target.classList.contains('copy-btn')){
+        const idx = e.target.dataset.idx;
+        if(idx !== undefined){
+          const entry = history[Number(idx)];
+          if(entry){
+            navigator.clipboard.writeText(entry.result).then(() => {
+              e.target.textContent = 'Copied!';
+              setTimeout(() => {
+                e.target.textContent = '📋';
+              }, 1500);
+            });
+          }
+        }
+      }
+    });
+
+    // Theme toggle
+    themeToggle.onclick = () => {
+      darkMode = !darkMode;
+      body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+      themeToggle.textContent = darkMode ? 'Light Mode' : 'Dark Mode';
+      themeToggle.setAttribute('aria-pressed', darkMode);
+    };
+
+    // Initialize
+    scientificButtons.hidden = true;
+    updateDisplays();
+    renderHistory();
+  })();
+</script>
+</body>
+</html>
+
