@@ -1,6 +1,6 @@
 # Calculator
 A Functional Calculator
-# Glassmorphism Scientific Calculator
+# A  Calculator
 
 A modern, elegant web-based scientific calculator featuring a clean glassmorphism design. Built as a single HTML file with embedded CSS and JavaScript for easy use and deployment.
 
@@ -19,7 +19,7 @@ A modern, elegant web-based scientific calculator featuring a clean glassmorphis
 
 ## Usage
 
-Simply open the `glassmorphism-scientific-calculator.html` file in any modern web browser to use the calculator instantly.
+Simply open the `calculator.html` file in any modern web browser to use the calculator instantly.
 
 ## Design
 
@@ -31,5 +31,5 @@ Built using semantic HTML5, CSS with modern visual effects (glassmorphism), and 
 
 ---
 
-Feel free to explore, modify, and extend this calculator as needed!
+
 
